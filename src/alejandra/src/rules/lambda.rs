@@ -55,18 +55,7 @@ pub(crate) fn rule(
     // c
     let child = children.get_next().unwrap();
     if vertical {
-        if comment
-            || !matches!(
-                child.kind(),
-                rnix::SyntaxKind::NODE_ATTR_SET
-                    | rnix::SyntaxKind::NODE_PAREN
-                    | rnix::SyntaxKind::NODE_LAMBDA
-                    | rnix::SyntaxKind::NODE_LET_IN
-                    | rnix::SyntaxKind::NODE_LIST
-                    | rnix::SyntaxKind::NODE_LITERAL
-                    | rnix::SyntaxKind::NODE_STRING
-            )
-        {
+        if comment {
             let should_indent = !matches!(
                 child.kind(),
                 rnix::SyntaxKind::NODE_ATTR_SET

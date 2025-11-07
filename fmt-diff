@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+for arg in $@; do
+  echo "$arg:"
+  if RUSTFLAGS='-Awarnings' cargo run -q -- -q <"$arg" | diff --color=always -- "$arg" -; then
+    echo "OK"
+  fi
+done
