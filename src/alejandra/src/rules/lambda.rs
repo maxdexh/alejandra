@@ -42,20 +42,38 @@ pub(crate) fn rule(
 
     // /**/
     let mut comment = false;
+    let mut body_newline = false;
     children.drain_trivia(|element| match element {
+        // FIXME: handle inline comments better
         crate::children::Trivia::Comment(text) => {
             comment = true;
             steps.push_back(crate::builder::Step::NewLine);
             steps.push_back(crate::builder::Step::Pad);
             steps.push_back(crate::builder::Step::Comment(text));
         }
-        crate::children::Trivia::Whitespace(_) => {}
+        crate::children::Trivia::Whitespace(text) => {
+            if text.contains('\n') {
+                body_newline = true;
+            }
+        }
     });
 
     // c
     let child = children.get_next().unwrap();
     if vertical {
-        if comment {
+        if comment
+            || body_newline
+                && !matches!(
+                    child.kind(),
+                    rnix::SyntaxKind::NODE_ATTR_SET
+                        | rnix::SyntaxKind::NODE_PAREN
+                        | rnix::SyntaxKind::NODE_LAMBDA
+                        | rnix::SyntaxKind::NODE_LET_IN
+                        | rnix::SyntaxKind::NODE_LIST
+                        | rnix::SyntaxKind::NODE_LITERAL
+                        | rnix::SyntaxKind::NODE_STRING
+                )
+        {
             let should_indent = !matches!(
                 child.kind(),
                 rnix::SyntaxKind::NODE_ATTR_SET

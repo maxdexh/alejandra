@@ -199,7 +199,7 @@ fn dedent_comment(pos: &crate::position::Position, text: &str) -> String {
     } else {
         let is_doc = text.starts_with("/**") && !text.starts_with("/**/");
 
-        // Inline comments are called inline comments for a reason.
+        // Inline comments are called "inline" for a reason.
         if !is_doc && !text.contains('\n') {
             return text.into();
         }

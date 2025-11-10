@@ -11,6 +11,7 @@ pub(crate) fn rule(
     let third = children.next().unwrap();
     let fourth = children.next().unwrap();
 
+    // FIXME: Do not enable vertical mode for non-newline inline comments
     let vertical = build_ctx.vertical
         || first.has_inline_comment
         || first.has_trivialities
