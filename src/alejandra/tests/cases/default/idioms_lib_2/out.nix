@@ -81,52 +81,37 @@
   */
   concat = x: y: x ++ y;
 
-  /*
-  boolean “or”
-  */
+  /* boolean “or” */
   or = x: y: x || y;
 
-  /*
-  boolean “and”
-  */
+  /* boolean “and” */
   and = x: y: x && y;
 
-  /*
-  bitwise “and”
-  */
+  /* bitwise “and” */
   bitAnd =
     builtins.bitAnd
     or (import ./zip-int-bits.nix
-      (a: b:
-        if a == 1 && b == 1
+      (a: b: if a == 1 && b == 1
         then 1
         else 0));
 
-  /*
-  bitwise “or”
-  */
+  /* bitwise “or” */
   bitOr =
     builtins.bitOr
     or (import ./zip-int-bits.nix
-      (a: b:
-        if a == 1 || b == 1
+      (a: b: if a == 1 || b == 1
         then 1
         else 0));
 
-  /*
-  bitwise “xor”
-  */
+  /* bitwise “xor” */
   bitXor =
     builtins.bitXor
     or (import ./zip-int-bits.nix
-      (a: b:
-        if a != b
+      (a: b: if a != b
         then 1
         else 0));
 
-  /*
-  bitwise “not”
-  */
+  /* bitwise “not” */
   bitNot = builtins.sub (-1);
 
   /*
@@ -138,10 +123,9 @@
 
   Type: boolToString :: bool -> string
   */
-  boolToString = b:
-    if b
-    then "true"
-    else "false";
+  boolToString = b: if b
+  then "true"
+  else "false";
 
   /*
   Merge two attribute sets shallowly, right side trumps left
@@ -182,10 +166,9 @@
     # Function to call
     f:
     # Argument to check for null before passing it to `f`
-    a:
-      if a == null
-      then a
-      else f a;
+    a: if a == null
+    then a
+    else f a;
 
   # Pull in some builtins not included elsewhere.
   inherit
@@ -205,14 +188,10 @@
 
   ## nixpkgs version strings
 
-  /*
-  Returns the current full nixpkgs version number.
-  */
+  /* Returns the current full nixpkgs version number. */
   version = release + versionSuffix;
 
-  /*
-  Returns the current nixpkgs release number as string.
-  */
+  /* Returns the current nixpkgs release number as string. */
   release = lib.strings.fileContents ../.version;
 
   /*
@@ -223,9 +202,7 @@
   */
   codeName = "Quokka";
 
-  /*
-  Returns the current nixpkgs version suffix as string.
-  */
+  /* Returns the current nixpkgs version suffix as string. */
   versionSuffix = let
     suffixFile = ../.version-suffix;
   in
@@ -263,21 +240,15 @@
 
   ## Integer operations
 
-  /*
-  Return minimum of two numbers.
-  */
-  min = x: y:
-    if x < y
-    then x
-    else y;
+  /* Return minimum of two numbers. */
+  min = x: y: if x < y
+  then x
+  else y;
 
-  /*
-  Return maximum of two numbers.
-  */
-  max = x: y:
-    if x > y
-    then x
-    else y;
+  /* Return maximum of two numbers. */
+  max = x: y: if x > y
+  then x
+  else y;
 
   /*
   Integer modulus
@@ -396,10 +367,9 @@
 
   Type: bool -> string -> a -> a
   */
-  warnIf = cond: msg:
-    if cond
-    then warn msg
-    else id;
+  warnIf = cond: msg: if cond
+  then warn msg
+  else id;
 
   /*
   Like the `assert b; e` expression, but with a custom error message and
@@ -421,10 +391,9 @@
       pkgs
 
   */
-  throwIfNot = cond: msg:
-    if cond
-    then x: x
-    else throw msg;
+  throwIfNot = cond: msg: if cond
+  then x: x
+  else throw msg;
 
   /*
   Check if the elements in a list are valid values from a enum, returning the identity function, or throwing an error message otherwise.
@@ -473,18 +442,16 @@
   has the same return type and semantics as builtins.functionArgs.
   setFunctionArgs : (a → b) → Map String Bool.
   */
-  functionArgs = f:
-    if f ? __functor
-    then f.__functionArgs or (lib.functionArgs (f.__functor f))
-    else builtins.functionArgs f;
+  functionArgs = f: if f ? __functor
+  then f.__functionArgs or (lib.functionArgs (f.__functor f))
+  else builtins.functionArgs f;
 
   /*
   Check whether something is a function or something
   annotated with function args.
   */
-  isFunction = f:
-    builtins.isFunction f
-    || (f ? __functor && isFunction (f.__functor f));
+  isFunction = f: builtins.isFunction f
+  || (f ? __functor && isFunction (f.__functor f));
 
   /*
   Convert the given positive integer to a string of its hexadecimal
@@ -497,20 +464,19 @@
   toHexString 250 => "FA"
   */
   toHexString = i: let
-    toHexDigit = d:
-      if d < 10
-      then toString d
-      else
-        {
-          "10" = "A";
-          "11" = "B";
-          "12" = "C";
-          "13" = "D";
-          "14" = "E";
-          "15" = "F";
-        }.${
-          toString d
-        };
+    toHexDigit = d: if d < 10
+    then toString d
+    else
+      {
+        "10" = "A";
+        "11" = "B";
+        "12" = "C";
+        "13" = "D";
+        "14" = "E";
+        "15" = "F";
+      }.${
+        toString d
+      };
   in
     lib.concatMapStrings toHexDigit (toBaseDigits 16 i);
 
@@ -525,14 +491,13 @@
   toBaseDigits 16 250 => [ 15 10 ]
   */
   toBaseDigits = base: i: let
-    go = i:
-      if i < base
-      then [i]
-      else let
-        r = i - ((i / base) * base);
-        q = (i - r) / base;
-      in
-        [r] ++ go q;
+    go = i: if i < base
+    then [i]
+    else let
+      r = i - ((i / base) * base);
+      q = (i - r) / base;
+    in
+      [r] ++ go q;
   in
     assert (base >= 2);
     assert (i >= 0);

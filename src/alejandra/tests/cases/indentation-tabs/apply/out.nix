@@ -1,3 +1,4 @@
 {
-  foo = bar: baz: fnbody;
+	foo = bar: baz:
+		fnbody;
 }

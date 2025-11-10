@@ -15,8 +15,7 @@
   python3,
   rustPlatform,
   wrapGAppsHook4,
-}:
-stdenv.mkDerivation rec {
+}: stdenv.mkDerivation rec {
   pname = "contrast";
   version = "0.0.5";
   src = fetchFromGitLab {
