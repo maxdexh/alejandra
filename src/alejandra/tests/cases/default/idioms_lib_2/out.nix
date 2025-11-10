@@ -442,9 +442,10 @@
   has the same return type and semantics as builtins.functionArgs.
   setFunctionArgs : (a → b) → Map String Bool.
   */
-  functionArgs = f: if f ? __functor
-  then f.__functionArgs or (lib.functionArgs (f.__functor f))
-  else builtins.functionArgs f;
+  functionArgs = f:
+    if f ? __functor
+    then f.__functionArgs or (lib.functionArgs (f.__functor f))
+    else builtins.functionArgs f;
 
   /*
   Check whether something is a function or something
@@ -464,19 +465,20 @@
   toHexString 250 => "FA"
   */
   toHexString = i: let
-    toHexDigit = d: if d < 10
-    then toString d
-    else
-      {
-        "10" = "A";
-        "11" = "B";
-        "12" = "C";
-        "13" = "D";
-        "14" = "E";
-        "15" = "F";
-      }.${
-        toString d
-      };
+    toHexDigit = d:
+      if d < 10
+      then toString d
+      else
+        {
+          "10" = "A";
+          "11" = "B";
+          "12" = "C";
+          "13" = "D";
+          "14" = "E";
+          "15" = "F";
+        }.${
+          toString d
+        };
   in
     lib.concatMapStrings toHexDigit (toBaseDigits 16 i);
 
@@ -491,13 +493,14 @@
   toBaseDigits 16 250 => [ 15 10 ]
   */
   toBaseDigits = base: i: let
-    go = i: if i < base
-    then [i]
-    else let
-      r = i - ((i / base) * base);
-      q = (i - r) / base;
-    in
-      [r] ++ go q;
+    go = i:
+      if i < base
+      then [i]
+      else let
+        r = i - ((i / base) * base);
+        q = (i - r) / base;
+      in
+        [r] ++ go q;
   in
     assert (base >= 2);
     assert (i >= 0);
