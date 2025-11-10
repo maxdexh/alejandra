@@ -42,8 +42,15 @@ pub(crate) fn rule(
     // peek: /**/
     let mut comments_before = std::collections::LinkedList::new();
     let mut newlines = false;
+    let mut force_newlines_before = false;
     children.drain_trivia(|element| match element {
         crate::children::Trivia::Comment(text) => {
+            if text.starts_with('#')
+                || text.starts_with("/**")
+                || text.contains('\n')
+            {
+                force_newlines_before = true;
+            }
             comments_before.push_back(crate::builder::Step::Comment(text))
         }
         crate::children::Trivia::Whitespace(text) => {
@@ -79,13 +86,16 @@ pub(crate) fn rule(
         }
         crate::children::Trivia::Whitespace(_) => {}
     });
+    if !comments_after.is_empty() {
+        force_newlines_before = true;
+    }
 
     // =
     let mut dedent = false;
     steps.push_back(crate::builder::Step::Format(child_equal));
 
     if vertical {
-        if !comments_before.is_empty() || !comments_after.is_empty() {
+        if force_newlines_before {
             dedent = true;
             steps.push_back(crate::builder::Step::Indent);
             steps.push_back(crate::builder::Step::NewLine);
@@ -124,8 +134,12 @@ pub(crate) fn rule(
     // /**/
     for comment in comments_before {
         steps.push_back(comment);
-        steps.push_back(crate::builder::Step::NewLine);
-        steps.push_back(crate::builder::Step::Pad);
+        if force_newlines_before {
+            steps.push_back(crate::builder::Step::NewLine);
+            steps.push_back(crate::builder::Step::Pad);
+        } else {
+            steps.push_back(crate::builder::Step::Whitespace);
+        }
     }
 
     // expr

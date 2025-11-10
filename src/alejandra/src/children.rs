@@ -198,6 +198,12 @@ fn dedent_comment(pos: &crate::position::Position, text: &str) -> String {
         text.to_string()
     } else {
         let is_doc = text.starts_with("/**") && !text.starts_with("/**/");
+
+        // Inline comments are called inline comments for a reason.
+        if !is_doc && !text.contains('\n') {
+            return text.into();
+        }
+
         let mut lines: Vec<String> = if is_doc {
             text[3..text.len() - 2]
                 .lines()
