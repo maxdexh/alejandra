@@ -50,6 +50,7 @@ pub(crate) fn rule(
                     | rnix::SyntaxKind::NODE_LIST
                     | rnix::SyntaxKind::NODE_PAREN
                     | rnix::SyntaxKind::NODE_STRING
+                    | rnix::SyntaxKind::NODE_IDENT
             )
         {
             steps.push_back(crate::builder::Step::Whitespace);
