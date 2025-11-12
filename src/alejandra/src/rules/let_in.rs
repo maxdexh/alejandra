@@ -91,11 +91,15 @@ pub(crate) fn rule(
 
     // /**/
     let mut child_comments = std::collections::LinkedList::new();
+    let mut child_has_newline = false;
     children.drain_trivia(|element| match element {
         crate::children::Trivia::Comment(text) => {
+            child_has_newline |= text.contains('\n');
             child_comments.push_back(crate::builder::Step::Comment(text))
         }
-        crate::children::Trivia::Whitespace(_) => {}
+        crate::children::Trivia::Whitespace(w) => {
+            child_has_newline |= w.contains('\n')
+        }
     });
 
     // expr
@@ -105,8 +109,8 @@ pub(crate) fn rule(
     let mut dedent = false;
     steps.push_back(crate::builder::Step::Format(child_in));
     if vertical {
-        if child_comments.is_empty()
-            && matches!(
+        if !child_has_newline
+            || matches!(
                 child_expr.kind(),
                 rnix::SyntaxKind::NODE_ATTR_SET
                     | rnix::SyntaxKind::NODE_LET_IN
